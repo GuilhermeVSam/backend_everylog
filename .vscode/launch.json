@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-EverylogApplication<Everylog>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.everylog.Everylog.EverylogApplication",
+            "projectName": "Everylog",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
