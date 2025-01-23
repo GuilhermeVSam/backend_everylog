@@ -1,32 +1,41 @@
 package com.everylog.Everylog.service;
 
 import org.springframework.web.client.RestTemplate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.everylog.Everylog.dto.MovieSearch;
 import com.everylog.Everylog.dto.OMDbResponse;
-
+import com.everylog.Everylog.dto.MusicBrainResponse;
 
 public class EveryService {
+    RestTemplate restTemplate = new RestTemplate();
+    String url;
 
     public List<MovieSearch> getContentByName(String name, String omdbKey) {
-        RestTemplate restTemplate = new RestTemplate();
-
-        String url = String.format("http://www.omdbapi.com/?apikey=%s&s=%s", omdbKey, name);
+        url = String.format("http://www.omdbapi.com/?apikey=%s&s=%s", omdbKey, name);
 
         OMDbResponse omdbResponse = restTemplate.getForObject(url, OMDbResponse.class);
 
-        List<MovieSearch> movies = new ArrayList<>();
-
         if ("True".equals(omdbResponse.getResponse())) {
-            for (MovieSearch movie : omdbResponse.getSearch()) {
-                movies.add(movie);
-            }
-        } else {
-            System.out.println("Error: " + omdbResponse.getError());
+            return omdbResponse.getSearch();
         }
-        System.out.println("aaa");
-        return movies;
+
+        return null;
+    }
+
+    public Map<String, MusicBrainResponse.Release> getAlbumsByName(String name, String artist) throws Exception{
+        if (artist != null) {
+            url = String.format("https://musicbrainz.org/ws/2/release?query=release:%s AND artist:%s&fmt=json", name,
+                    artist);
+        } else {
+            url = String.format("https://musicbrainz.org/ws/2/release?query=release:%s&fmt=json", name);
+        }
+        
+        MusicBrainResponse musicBrainResponse = restTemplate.getForObject(url, MusicBrainResponse.class);
+
+        if(musicBrainResponse == null) throw new Exception("API Not Responding");
+
+        return musicBrainResponse.getUniqueReleasesByArtist();
     }
 }
