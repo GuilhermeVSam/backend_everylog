@@ -1,5 +1,6 @@
 package com.everylog.Everylog.service;
 
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import com.everylog.Everylog.dto.MovieSearch;
 import com.everylog.Everylog.dto.OMDbResponse;
 import com.everylog.Everylog.dto.MusicBrainResponse;
 
+@Service
 public class EveryService {
     RestTemplate restTemplate = new RestTemplate();
     String url;
@@ -24,17 +26,18 @@ public class EveryService {
         return null;
     }
 
-    public Map<String, MusicBrainResponse.Release> getAlbumsByName(String name, String artist) throws Exception{
+    public Map<String, MusicBrainResponse.Release> getAlbumsByName(String name, String artist) throws Exception {
         if (artist != null) {
             url = String.format("https://musicbrainz.org/ws/2/release?query=release:%s AND artist:%s&fmt=json", name,
                     artist);
         } else {
             url = String.format("https://musicbrainz.org/ws/2/release?query=release:%s&fmt=json", name);
         }
-        
+
         MusicBrainResponse musicBrainResponse = restTemplate.getForObject(url, MusicBrainResponse.class);
 
-        if(musicBrainResponse == null) throw new Exception("API Not Responding");
+        if (musicBrainResponse == null)
+            throw new Exception("API Not Responding");
 
         return musicBrainResponse.getUniqueReleasesByArtist();
     }

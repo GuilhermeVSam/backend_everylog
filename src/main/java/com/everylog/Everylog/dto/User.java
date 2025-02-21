@@ -1,5 +1,6 @@
 package com.everylog.Everylog.dto;
 
+
 public class User {
     private Long id;
     private String username;
