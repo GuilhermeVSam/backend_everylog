@@ -1,5 +1,7 @@
 package com.everylog.Everylog.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -8,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.everylog.Everylog.dto.SignupRequest;
+import com.everylog.Everylog.dto.User;
 import com.everylog.Everylog.model.UserModel;
 import com.everylog.Everylog.repository.UserRepository;
 import com.everylog.Everylog.security.UserAuthenticated;
@@ -30,6 +33,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return userRepository.findByUsername(username)
                 .map(UserAuthenticated::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    public User loadUserDetailsByUsername(String username) {
+        Optional<UserModel> userDetails = userRepository.findByUsername(username);
+        if (userDetails.isPresent()) {
+            UserModel userModel = userDetails.get();
+            User user = new User();
+            user.setUsername(userModel.getUsername());
+            user.setEmail(userModel.getEmail());
+            return user;
+        } else {
+            throw new UsernameNotFoundException("User not found");
+        }
+
     }
 
     public void registerUser(SignupRequest signupRequest) {

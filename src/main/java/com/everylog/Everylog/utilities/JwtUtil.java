@@ -24,7 +24,8 @@ public class JwtUtil {
     private PrivateKey getPrivateKey() {
         try {
             // Read the private key from the file
-            String privateKeyPEM = new String(getClass().getClassLoader().getResourceAsStream("keys/private_key.pem").readAllBytes())
+            String privateKeyPEM = new String(
+                    getClass().getClassLoader().getResourceAsStream("keys/private_key.pem").readAllBytes())
                     .replace("-----BEGIN PRIVATE KEY-----", "")
                     .replace("-----END PRIVATE KEY-----", "")
                     .replaceAll("\\s", "");
@@ -45,7 +46,8 @@ public class JwtUtil {
     private PublicKey getPublicKey() {
         try {
             // Read the public key from the file
-            String publicKeyPEM = new String(getClass().getClassLoader().getResourceAsStream("keys/public_key.pem").readAllBytes())
+            String publicKeyPEM = new String(
+                    getClass().getClassLoader().getResourceAsStream("keys/public_key.pem").readAllBytes())
                     .replace("-----BEGIN PUBLIC KEY-----", "")
                     .replace("-----END PUBLIC KEY-----", "")
                     .replaceAll("\\s", "");

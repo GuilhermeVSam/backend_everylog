@@ -14,6 +14,8 @@ public class OMDbResponse {
     @JsonProperty("Error")
     private String error;
 
+    private String contentType;
+
     // Getters and setters
     public List<MovieSearch> getSearch() {
         return search;
@@ -37,5 +39,13 @@ public class OMDbResponse {
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 }

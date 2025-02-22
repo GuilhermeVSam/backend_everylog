@@ -97,7 +97,8 @@ public class SecurityConfig {
                                 "/api/auth/login", "/api/auth/signup")
                         .permitAll()
                         .anyRequest().authenticated())
-                .oauth2ResourceServer(conf -> conf.jwt(Customizer.withDefaults()));
+                .oauth2ResourceServer(conf -> conf.jwt(Customizer.withDefaults()))
+                .cors(Customizer.withDefaults());
 
         return http.build();
     }

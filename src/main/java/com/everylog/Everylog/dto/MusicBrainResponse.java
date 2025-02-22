@@ -16,9 +16,9 @@ public class MusicBrainResponse {
     public Map<String, Release> getUniqueReleasesByArtist() {
         return releases.stream()
                 .collect(Collectors.toMap(
-                        release -> release.getArtist().get(0).getArtist().getId(), // Group by artist ID
-                        release -> release,                                       // Keep the release as value
-                        (existing, replacement) -> existing                       // Keep the first release
+                        release -> release.getArtistCredits().get(0).getArtist().getId(), // Group by artist ID
+                        release -> release, // Keep the release as value
+                        (existing, replacement) -> existing // Keep the first release
                 ));
     }
 
@@ -39,35 +39,67 @@ public class MusicBrainResponse {
         @JsonProperty("title")
         private String title;
 
-        @JsonProperty("artist-credit")
-        private List<ArtistCredit> artistCredit;
-
         @JsonProperty("date")
-        private String date;
+        private String year;
 
         @JsonProperty("tags")
         private List<Tag> tags;
 
-        // Getters and Setters
+        private String contentType;
+
+        @JsonProperty("artist-credit")
+        private List<ArtistCredit> artistCredits;
+
         public String getId() {
             return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
         }
 
         public String getTitle() {
             return title;
         }
 
-        public List<ArtistCredit> getArtist() {
-            return artistCredit;
+        public void setTitle(String title) {
+            this.title = title;
         }
 
-        public String getDate() {
-            return date;
+        public String getYear() {
+            return year;
+        }
+
+        public void setYear(String date) {
+            this.year = date;
         }
 
         public List<Tag> getTags() {
             return tags;
         }
+
+        public void setTags(List<Tag> tags) {
+            this.tags = tags;
+        }
+
+        public String getContentType() {
+            return contentType;
+        }
+
+        public void setContentType(String contentType) {
+            this.contentType = contentType;
+        }
+
+        public List<ArtistCredit> getArtistCredits() {
+            return artistCredits;
+        }
+
+        public void setArtistCredits(List<ArtistCredit> artistCredits) {
+            this.artistCredits = artistCredits;
+        }
+
+        // Getters and Setters
+
     }
 
     public static class ArtistCredit {

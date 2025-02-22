@@ -4,5 +4,11 @@ CREATE TABLE IF NOT EXISTS USERS (
     password VARCHAR(255) NOT NULL
 );
 
-INSERT INTO USERS (username, email, password)
-VALUES ('username', 'username@email.com', '$2b$12$8yBzPonipwEoVS0XU1MoluINazqu/eWPPdMMQ/5z.yy16R3MHiDWa')
+CREATE TABLE IF NOT EXISTS REVIEWS (
+    id INTEGER NOT NULL PRIMARY KEY,
+    username VARCHAR(255) REFERENCES USERS (username),
+    contentType VARCHAR(20),
+    contentId VARCHAR(255),
+    review VARCHAR(255),
+    rating VARCHAR(10)
+);

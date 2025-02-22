@@ -15,6 +15,8 @@ public class MovieSearch {
     @JsonProperty("Type")
     private String type;
 
+    private String contentType;
+
     @JsonProperty("Poster")
     private String poster;
 
@@ -56,6 +58,14 @@ public class MovieSearch {
 
     public void setPoster(String poster) {
         this.poster = poster;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
     @Override
