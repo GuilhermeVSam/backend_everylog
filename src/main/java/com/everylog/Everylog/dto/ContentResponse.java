@@ -1,25 +1,50 @@
 package com.everylog.Everylog.dto;
 
-import java.util.List;
-
 public class ContentResponse {
-    private List<MovieSearch> movies;
-    private List<MusicBrainResponse.Release> albums;
+    private String title;
+    private String year;
+    private String type;
+    private String author;
+    private String cover;
 
-    // Getters and setters
-    public List<MovieSearch> getMovies() {
-        return movies;
+    public String getTitle() {
+        return title;
     }
 
-    public void setMovies(List<MovieSearch> movies) {
-        this.movies = movies;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public List<MusicBrainResponse.Release> getAlbums() {
-        return albums;
+    public String getYear() {
+        return year;
     }
 
-    public void setAlbums(List<MusicBrainResponse.Release> albums) {
-        this.albums = albums;
+    public void setYear(String year) {
+        this.year = year;
     }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getCover() {
+        return cover;
+    }
+
+    public void setCover(String cover) {
+        this.cover = cover;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
 }

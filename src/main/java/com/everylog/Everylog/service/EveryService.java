@@ -1,15 +1,17 @@
 package com.everylog.Everylog.service;
 
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import com.everylog.Everylog.dto.MovieSearch;
-import com.everylog.Everylog.dto.OMDbResponse;
-import com.everylog.Everylog.dto.MusicBrainResponse;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.everylog.Everylog.dto.AlbumInfo;
 import com.everylog.Everylog.dto.ContentResponse;
+import com.everylog.Everylog.dto.ContentReviewInfo;
+import com.everylog.Everylog.dto.DeezerAPIResponse;
+import com.everylog.Everylog.dto.MovieSearch;
+import com.everylog.Everylog.dto.MovieSearchResponse;
 
 @Service
 public class EveryService {
@@ -20,48 +22,94 @@ public class EveryService {
     public List<MovieSearch> getContentByName(String name) {
         url = String.format("http://www.omdbapi.com/?apikey=%s&s=%s", omdbKey, name);
 
-        OMDbResponse omdbResponse = restTemplate.getForObject(url, OMDbResponse.class);
+        MovieSearchResponse omdbResponse = restTemplate.getForObject(url, MovieSearchResponse.class);
 
         if ("True".equals(omdbResponse.getResponse())) {
             List<MovieSearch> movies = omdbResponse.getSearch();
-            for (MovieSearch movie : movies) {
-                movie.setContentType("Movie/Series");
-            }
             return movies;
         }
 
         return null;
     }
 
-    public Map<String, MusicBrainResponse.Release> getAlbumsByName(String name, String artist) throws Exception {
-        if (artist != null) {
-            url = String.format("https://musicbrainz.org/ws/2/release?query=release:%s AND artist:%s&fmt=json", name,
-                    artist);
-        } else {
-            url = String.format("https://musicbrainz.org/ws/2/release?query=release:%s&fmt=json", name);
-        }
+    public MovieSearch getMovieById(String id) {
+        url = String.format("http://www.omdbapi.com/?apikey=%s&i=%s", omdbKey, id);
 
-        MusicBrainResponse musicBrainResponse = restTemplate.getForObject(url, MusicBrainResponse.class);
+        MovieSearch omdbResponse = restTemplate.getForObject(url, MovieSearch.class);
 
-        if (musicBrainResponse == null)
-            throw new Exception("API Not Responding");
-
-        Map<String, MusicBrainResponse.Release> releases = musicBrainResponse.getUniqueReleasesByArtist();
-        for (MusicBrainResponse.Release release : releases.values()) {
-            release.setContentType("Album");
-        }
-
-        return releases;
+        return omdbResponse;
     }
 
-    public ContentResponse getAllContent(String name, String artist) throws Exception {
+    public List<ContentResponse> getAllContent(String name, String artist) throws Exception {
+        List<ContentResponse> list = new ArrayList<>();
+        List<AlbumInfo> albums = getAlbumByName(name);
         List<MovieSearch> movies = getContentByName(name);
-        Map<String, MusicBrainResponse.Release> albums = getAlbumsByName(name, artist);
 
-        ContentResponse contentResponse = new ContentResponse();
-        contentResponse.setMovies(movies);
-        contentResponse.setAlbums(new ArrayList<>(albums.values()));
+        for (MovieSearch movie : movies) {
+            ContentResponse cr = new ContentResponse();
+            cr.setTitle(movie.getTitle());
+            cr.setYear(movie.getYear());
+            cr.setAuthor(movie.getDirector());
+            cr.setCover(movie.getPoster());
+            cr.setType(movie.getType());
+            list.add(cr);
+        }
 
-        return contentResponse;
+        for (AlbumInfo album : albums) {
+            ContentResponse cr = new ContentResponse();
+            cr.setTitle(album.getTitle());
+            cr.setCover(album.getCover());
+            cr.setAuthor(album.getArtist().getName());
+            cr.setType("album");
+            list.add(cr);
+        }
+
+        return list;
+    }
+
+    public List<AlbumInfo> getAlbumByName(String name) {
+        if (name != null) {
+            String url = "https://api.deezer.com/search/album?q=" + name;
+            DeezerAPIResponse response = restTemplate.getForObject(url, DeezerAPIResponse.class);
+            return response.getData();
+        }
+        return null;
+    }
+
+    public AlbumInfo getAlbumById(String id) {
+        if (id != null) {
+            url = String.format("https://api.deezer.com/album/%s", id);
+
+            AlbumInfo albumInfo = restTemplate.getForObject(url, AlbumInfo.class);
+
+            return albumInfo;
+        }
+        return null;
+    }
+
+    public ContentReviewInfo getContentInfo(String id, String type) {
+        ContentReviewInfo contentReviewInfo = new ContentReviewInfo();
+        switch (type) {
+            case "movie":
+                MovieSearch ms = getMovieById(id);
+                contentReviewInfo.setContentName(ms.getTitle());
+                contentReviewInfo.setContentDirector(ms.getDirector());
+                contentReviewInfo.setContentYear(ms.getYear());
+                contentReviewInfo.setContentBanner(ms.getPoster());
+                break;
+
+            case "album":
+                AlbumInfo ai = getAlbumById(id);
+                contentReviewInfo.setContentName(ai.getTitle());
+                contentReviewInfo.setContentDirector(ai.getArtist().getName());
+                contentReviewInfo.setContentYear(ai.getReleaseDate());
+                contentReviewInfo.setContentBanner(ai.getCover());
+                break;
+
+            default:
+                break;
+        }
+
+        return contentReviewInfo;
     }
 }

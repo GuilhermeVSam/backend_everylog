@@ -3,6 +3,7 @@ package com.everylog.Everylog.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/reviews")
@@ -28,7 +30,11 @@ public class ReviewsController {
 
     @PostMapping("/new")
     public ResponseEntity<?> createNewReview(@RequestBody Review review) {
-        reviewsService.createReview(review);
+        try {
+            reviewsService.createReview(review);
+        } catch (RuntimeException exRuntimeException) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Review already exists.");
+        }
         return ResponseEntity.ok(review);
     }
 
