@@ -1,10 +1,10 @@
 package com.everylog.Everylog.dto;
 
 public class ContentResponse {
+    private String id;
     private String title;
     private String year;
     private String type;
-    private String author;
     private String cover;
 
     public String getTitle() {
@@ -39,12 +39,11 @@ public class ContentResponse {
         this.cover = cover;
     }
 
-    public String getAuthor() {
-        return author;
+    public String getId() {
+        return id;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setId(String id) {
+        this.id = id;
     }
-
 }

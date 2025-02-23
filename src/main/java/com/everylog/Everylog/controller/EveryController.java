@@ -25,7 +25,7 @@ public class EveryController {
     public ResponseEntity<List<MovieSearch>> searchMovieByName(
             @RequestParam(value = "title") String title) {
         try {
-            List<MovieSearch> movies = everyService.getContentByName(title);
+            List<MovieSearch> movies = everyService.getMoviesByName(title);
             return ResponseEntity.ok(movies);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -33,14 +33,14 @@ public class EveryController {
     }
 
     @GetMapping("/movieId")
-    public ResponseEntity<MovieSearch> searchMovieByIdEntity(@RequestParam(value = "id") String id) {
+    public ResponseEntity<MovieSearch> searchMovieById(@RequestParam(value = "id") String id) {
         MovieSearch movie = everyService.getMovieById(id);
 
         return ResponseEntity.ok(movie);
     }
 
     @GetMapping("/albums")
-    public ResponseEntity<List<AlbumInfo>> getMethodName(@RequestParam String name) {
+    public ResponseEntity<List<AlbumInfo>> getAlbumByName(@RequestParam String name) {
         return ResponseEntity.ok(everyService.getAlbumByName(name));
     }
 

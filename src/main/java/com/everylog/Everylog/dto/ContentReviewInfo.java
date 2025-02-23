@@ -1,25 +1,43 @@
 package com.everylog.Everylog.dto;
 
 public class ContentReviewInfo {
+    private String id;
     private String contentName;
-    private String contentDirector;
+    private String contentAuthor;
     private String contentYear;
     private String contentBanner;
+    private String contentType;
 
     public String getContentName() {
         return contentName;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
     public void setContentName(String contentName) {
         this.contentName = contentName;
     }
 
-    public String getContentDirector() {
-        return contentDirector;
+    public String getContentAuthor() {
+        return contentAuthor;
     }
 
-    public void setContentDirector(String contentDirector) {
-        this.contentDirector = contentDirector;
+    public void setContentAuthor(String contentDirector) {
+        this.contentAuthor = contentDirector;
     }
 
     public String getContentYear() {

@@ -19,14 +19,16 @@ public class EveryService {
     String url;
     private String omdbKey = System.getenv("OMDB_KEY");
 
-    public List<MovieSearch> getContentByName(String name) {
-        url = String.format("http://www.omdbapi.com/?apikey=%s&s=%s", omdbKey, name);
+    public List<MovieSearch> getMoviesByName(String name) {
+        if (name != null) {
+            url = String.format("http://www.omdbapi.com/?apikey=%s&s=%s", omdbKey, name);
 
-        MovieSearchResponse omdbResponse = restTemplate.getForObject(url, MovieSearchResponse.class);
+            MovieSearchResponse omdbResponse = restTemplate.getForObject(url, MovieSearchResponse.class);
 
-        if ("True".equals(omdbResponse.getResponse())) {
-            List<MovieSearch> movies = omdbResponse.getSearch();
-            return movies;
+            if (omdbResponse == null || omdbResponse.getSearch() == null) {
+                return new ArrayList<>();
+            }
+            return omdbResponse.getSearch();
         }
 
         return null;
@@ -43,25 +45,30 @@ public class EveryService {
     public List<ContentResponse> getAllContent(String name, String artist) throws Exception {
         List<ContentResponse> list = new ArrayList<>();
         List<AlbumInfo> albums = getAlbumByName(name);
-        List<MovieSearch> movies = getContentByName(name);
+        List<MovieSearch> movies = getMoviesByName(name);
 
-        for (MovieSearch movie : movies) {
-            ContentResponse cr = new ContentResponse();
-            cr.setTitle(movie.getTitle());
-            cr.setYear(movie.getYear());
-            cr.setAuthor(movie.getDirector());
-            cr.setCover(movie.getPoster());
-            cr.setType(movie.getType());
-            list.add(cr);
+        if (!movies.isEmpty()) {
+            for (MovieSearch movie : movies) {
+                ContentResponse cr = new ContentResponse();
+                cr.setId(movie.getImdbID());
+                cr.setTitle(movie.getTitle());
+                cr.setYear(movie.getYear());
+                cr.setCover(movie.getPoster());
+                cr.setType(movie.getType());
+                list.add(cr);
+            }
         }
 
-        for (AlbumInfo album : albums) {
-            ContentResponse cr = new ContentResponse();
-            cr.setTitle(album.getTitle());
-            cr.setCover(album.getCover());
-            cr.setAuthor(album.getArtist().getName());
-            cr.setType("album");
-            list.add(cr);
+        if (!albums.isEmpty()) {
+            for (AlbumInfo album : albums) {
+                ContentResponse cr = new ContentResponse();
+                cr.setId("" + album.getId());
+                cr.setTitle(album.getTitle());
+                cr.setCover(album.getCover());
+                cr.setYear(album.getReleaseDate());
+                cr.setType(album.getRecordType());
+                list.add(cr);
+            }
         }
 
         return list;
@@ -71,6 +78,9 @@ public class EveryService {
         if (name != null) {
             String url = "https://api.deezer.com/search/album?q=" + name;
             DeezerAPIResponse response = restTemplate.getForObject(url, DeezerAPIResponse.class);
+            if (response == null || response.getData() == null) {
+                return new ArrayList<>();
+            }
             return response.getData();
         }
         return null;
@@ -92,18 +102,32 @@ public class EveryService {
         switch (type) {
             case "movie":
                 MovieSearch ms = getMovieById(id);
+                contentReviewInfo.setId(ms.getImdbID());
                 contentReviewInfo.setContentName(ms.getTitle());
-                contentReviewInfo.setContentDirector(ms.getDirector());
+                contentReviewInfo.setContentAuthor(ms.getDirector());
                 contentReviewInfo.setContentYear(ms.getYear());
                 contentReviewInfo.setContentBanner(ms.getPoster());
+                contentReviewInfo.setContentType("movie");
+                break;
+
+            case "game":
+                MovieSearch gm = getMovieById(id);
+                contentReviewInfo.setId(gm.getImdbID());
+                contentReviewInfo.setContentName(gm.getTitle());
+                contentReviewInfo.setContentAuthor(gm.getDirector());
+                contentReviewInfo.setContentYear(gm.getYear());
+                contentReviewInfo.setContentBanner(gm.getPoster());
+                contentReviewInfo.setContentType("movie");
                 break;
 
             case "album":
                 AlbumInfo ai = getAlbumById(id);
+                contentReviewInfo.setId("" + ai.getId());
                 contentReviewInfo.setContentName(ai.getTitle());
-                contentReviewInfo.setContentDirector(ai.getArtist().getName());
+                contentReviewInfo.setContentAuthor(ai.getArtist().getName());
                 contentReviewInfo.setContentYear(ai.getReleaseDate());
                 contentReviewInfo.setContentBanner(ai.getCover());
+                contentReviewInfo.setContentType("album");
                 break;
 
             default:

@@ -7,6 +7,7 @@ import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -93,12 +94,26 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeRequests(auth -> auth
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
-                                "/api/auth/login", "/api/auth/signup")
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/api/auth/login",
+                                "/api/auth/signup",
+                                "/api/content/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(conf -> conf.jwt(Customizer.withDefaults()))
-                .cors(Customizer.withDefaults());
+                .cors(Customizer.withDefaults())
+                .exceptionHandling(handling -> handling
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            System.out.println("Access Denied for: " + request.getRequestURI());
+                            response.sendError(HttpStatus.FORBIDDEN.value(), "Access Denied");
+                        })
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            System.out.println("Unauthorized for: " + request.getRequestURI());
+                            response.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized");
+                        }));
 
         return http.build();
     }
